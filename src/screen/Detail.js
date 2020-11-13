@@ -5,18 +5,24 @@ import Constants from 'expo-constants';
 import List from '../component/List';
 import ListItem from '../component/ListItem';
 import ListComment from '../component/ListComment';
+//import redux
+import { connect } from 'react-redux';
+import { savePost } from '../redux/action';
+import { unsavePost } from '../redux/action';
 
 const iconStars = require('../assest/image/icon-stars.png');
 
 const iconBack = require('../assest/image/icon-back.png');
 
-export default class Detail extends React.Component{
+class Detail extends React.Component{
 
     constructor(props){
         super(props);
         this.state = {
             listComments : [],
-            isSaved: props.route.params.isSaved
+            isSaved: props.savedPosts.some(
+                (e)=>e.id === props.route.params.data.id
+            )
         }
     }
 
@@ -35,10 +41,15 @@ export default class Detail extends React.Component{
     goBack = () => this.props.navigation.goBack();
 
     onSave = () => {
+        if(this.state.isSaved){
+            this.props.unsavePost(this.props.route.params.data);
+        }else{
+            
+            this.props.savePost(this.props.route.params.data);
+        }
         this.setState((state)=>({
             isSaved: !state.isSaved
-        }));
-        this.props.route.params.callback();
+        }));     
     }
 
     render(){
@@ -67,6 +78,19 @@ export default class Detail extends React.Component{
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        savedPosts : state.savedPosts
+    }
+};
+
+const mapDispatchToProps = {
+    savePost,
+    unsavePost
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Detail);
 
 const styles = StyleSheet.create({
     //header

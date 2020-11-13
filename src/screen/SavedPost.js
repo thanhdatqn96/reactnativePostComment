@@ -4,10 +4,12 @@ import Constants from 'expo-constants';
 //import component
 import List from '../component/List';
 import ListItem from '../component/ListItem';
+//redux
+import { connect } from 'react-redux';
 
 const iconBack = require('../assest/image/icon-back.png');
 
-export default class SavedPost extends React.Component{
+class SavedPost extends React.Component{
 
     goBack = () => this.props.navigation.goBack();
 
@@ -20,13 +22,21 @@ export default class SavedPost extends React.Component{
                     </TouchableOpacity>
                 </View>
                 <List 
-                    data={this.props.route.params.data} 
+                    data={this.props.savedPosts} 
                     item={(props) => <ListItem {...props} onPress={() => this.goToDetail(props)} />}
                 />
             </SafeAreaView>
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        savedPosts : state.savedPosts
+    }
+};
+
+export default connect(mapStateToProps)(SavedPost);
 
 const styles = StyleSheet.create({
     //header

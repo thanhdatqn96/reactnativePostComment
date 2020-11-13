@@ -5,15 +5,16 @@ import Constants from 'expo-constants';
 import Header from '../component/Header';
 import List from '../component/List';
 import ListItem from '../component/ListItem';
+//redux
+import { connect } from 'react-redux';
 
 
-export default class Post extends React.Component{
+class Post extends React.Component{
 
     constructor(props){
         super(props);
         this.state = {
             listPosts : [],
-            savePosts : []
         }
     }
     componentDidMount(){
@@ -24,38 +25,21 @@ export default class Post extends React.Component{
         })
     }
 
-    onSave = (item) => {
-        const isSaved = this.state.savePosts.some((e) => e.id === item.id);
-        if(isSaved){
-            this.setState((state)=>({
-                savePosts: state.savePosts.filter((e)=>e.id !== item.id) 
-            }));
-        }else{
-            this.setState((state)=>({
-                savePosts: [...state.savePosts,item] 
-            }));
-        }     
-    }
-
     goToDetail = (obj) => {
         this.props.navigation.navigate('Detail',{
             data: obj.data,
-            isSaved: this.state.savePosts.some((e) => e.id === obj.data.id),
-            callback: () => {
-                this.onSave(obj.data);
-            },
         });
     }
 
     onStarButtonPressed = () => {
-        this.props.navigation.navigate('SavedPost',{data: this.state.savePosts})
+        this.props.navigation.navigate('SavedPost')
     }
 
     render(){
         return(
             <SafeAreaView style={styles.container}>
                 <Header 
-                    number={this.state.savePosts.length}
+                    number={this.props.savedPosts.length}
                     onPress={this.onStarButtonPressed} 
                 />
                 <List 
@@ -66,6 +50,14 @@ export default class Post extends React.Component{
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        savedPosts : state.savedPosts
+    }
+};
+
+export default connect(mapStateToProps)(Post);
 
 const styles = StyleSheet.create({
     container: {
